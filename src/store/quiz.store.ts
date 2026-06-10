@@ -11,6 +11,8 @@ interface QuizStore {
   selectedAlternativeId: string | null;
   answerResult: QuizAnswerResponse | null;
   finalResults: QuizFinalResults | null;
+  /** Stored separately so advance() can apply it atomically */
+  nextQuestionOrder: number | null;
 
   setLanguageId: (id: string) => void;
   setLevelId: (id: string) => void;
@@ -29,12 +31,19 @@ export const useQuizStore = create<QuizStore>((set) => ({
   selectedAlternativeId: null,
   answerResult: null,
   finalResults: null,
+  nextQuestionOrder: null,
 
   setLanguageId: (id) => set({ selectedLanguageId: id }),
   setLevelId: (id) => set({ selectedLevelId: id }),
 
   setSession: (session) =>
-    set({ session, phase: 'playing', selectedAlternativeId: null, answerResult: null }),
+    set({
+      session,
+      phase: 'playing',
+      selectedAlternativeId: null,
+      answerResult: null,
+      nextQuestionOrder: null,
+    }),
 
   selectAlternative: (id) => set({ selectedAlternativeId: id }),
 
@@ -50,11 +59,17 @@ export const useQuizStore = create<QuizStore>((set) => ({
               current_score: r.session.current_score,
               total_xp_earned: r.session.total_xp_earned,
               is_complete: r.session.is_complete,
-              current_question_order: r.session.next_question_order ?? state.session.progress.current_question_order,
-              accuracy_percentage: r.session.questions_answered > 0
-                ? Math.round((r.session.current_score / r.session.questions_answered) * 100)
-                : 0,
+              accuracy_percentage:
+                r.session.questions_answered > 0
+                  ? Math.round(
+                      (r.session.current_score / r.session.questions_answered) * 100,
+                    )
+                  : 0,
               completed_at: r.session.completed_at,
+              // current_question_order intentionally NOT advanced here.
+              // It still points to the just-answered question so the
+              // 'answered' phase can display it correctly.
+              // advance() will move it to next_question_order.
             },
             questions: state.session.questions.map((q) =>
               q.order === r.question_order
@@ -76,12 +91,32 @@ export const useQuizStore = create<QuizStore>((set) => ({
         answerResult: r,
         finalResults: r.final_results,
         session: updatedSession,
+        nextQuestionOrder: r.session.next_question_order,
         phase: r.session.is_complete ? 'completed' : 'answered',
       };
     }),
 
   advance: () =>
-    set({ phase: 'playing', selectedAlternativeId: null, answerResult: null }),
+    set((state) => {
+      // Atomically advance current_question_order to the next question
+      const session =
+        state.session && state.nextQuestionOrder !== null
+          ? {
+              ...state.session,
+              progress: {
+                ...state.session.progress,
+                current_question_order: state.nextQuestionOrder,
+              },
+            }
+          : state.session;
+
+      return {
+        phase: 'playing',
+        selectedAlternativeId: null,
+        answerResult: null,
+        session,
+      };
+    }),
 
   reset: () =>
     set({
@@ -92,5 +127,6 @@ export const useQuizStore = create<QuizStore>((set) => ({
       selectedAlternativeId: null,
       answerResult: null,
       finalResults: null,
+      nextQuestionOrder: null,
     }),
 }));

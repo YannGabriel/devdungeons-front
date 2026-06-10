@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Zap, BookOpen } from 'lucide-react';
 import { useQuizStore } from '../store/quiz.store';
-import { useStartQuiz, useAnswerQuiz } from '../hooks/useQuiz';
+import { useStartQuiz, useAnswerQuiz, useQuizHistory } from '../hooks/useQuiz';
 import { useLevels } from '../hooks/useLevels';
 import { useLanguages } from '../hooks/useLanguages';
 import { useAuth } from '../contexts/AuthContext';
 import { getCurrentQuestion } from '../adapters/quiz.adapter';
 import { QuestionCard } from '../components/organisms/QuestionCard';
 import { QuizResults } from '../components/organisms/QuizResults';
-import { QuizSetupCard } from '../components/organisms/QuizSetupCard';
+import { QuizSetupCard, type CompletedSession } from '../components/organisms/QuizSetupCard';
 import { Spinner } from '../components/atoms/Spinner';
 import { Progress } from '../components/atoms/Progress';
 import { Badge } from '../components/atoms/Badge';
@@ -34,6 +34,24 @@ export function QuizPage() {
 
   const { data: languages } = useLanguages();
   const { data: levels } = useLevels();
+  const { data: history } = useQuizHistory();
+
+  // Map: languageId → levelId → { sessionId, accuracy } (most recent completed session)
+  const completedMap = useMemo(() => {
+    const map: Record<string, Record<string, CompletedSession>> = {};
+    history
+      ?.filter((h) => h.status === 'COMPLETED' && h.level)
+      .forEach((h) => {
+        const langId = h.language.id;
+        const levelId = h.level!.id;
+        if (!map[langId]) map[langId] = {};
+        // history is sorted DESC — keep the first (most recent) entry
+        if (!map[langId][levelId]) {
+          map[langId][levelId] = { sessionId: h.id, accuracy: h.accuracy_percentage };
+        }
+      });
+    return map;
+  }, [history]);
 
   const startMutation = useStartQuiz();
   const answerMutation = useAnswerQuiz(session?.session_id ?? '');
@@ -196,9 +214,11 @@ export function QuizPage() {
               key={lang.id}
               language={lang}
               levels={levels}
+              completedSessions={completedMap[lang.id] ?? {}}
               isStarting={startingLanguageId === lang.id}
               disabled={isAnyStarting}
               onStart={handleStart}
+              onReview={(sessionId) => navigate(`/quiz/review/${sessionId}`)}
             />
           ))}
         </div>
@@ -211,13 +231,6 @@ export function QuizPage() {
         </p>
       )}
 
-      <Link
-        to="/languages"
-        className="flex items-center justify-center gap-1.5 text-sm text-text-3 hover:text-text transition-colors"
-      >
-        <BookOpen size={14} />
-        Explorar desafios primeiro
-      </Link>
     </div>
   );
 }

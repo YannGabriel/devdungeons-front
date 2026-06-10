@@ -13,19 +13,14 @@ export function DashboardPage() {
       {/* Greeting */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-text">
-            Olá, {user?.username?.split(' ')[0]}
+          <h1 className="text-2xl font-bold text-text ">
+            Olá, 
+            <span className='text-red-500'>
+              {user?.username?.split(' ')[0]}
+            </span>
           </h1>
-          <p className="text-sm text-text-3 mt-0.5">
-            {levelLabel(user?.user_level ?? 0)} · Continue evoluindo!
-          </p>
+          <p>Seja bem vindo a DevDungeons, pronto para iniciar os estudos de hoje?</p>
         </div>
-        <Link to="/quiz">
-          <Button size="md">
-            <Zap size={15} />
-            Jogar agora
-          </Button>
-        </Link>
       </div>
 
       <DashboardStats />
@@ -36,11 +31,11 @@ export function DashboardPage() {
           to="/languages"
           className="group flex items-center gap-4 rounded-lg border border-border bg-surface p-4 hover:border-border-2 hover:shadow-sm transition-all"
         >
-          <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-bg-tertiary text-text-2 group-hover:bg-accent group-hover:text-text-inverse transition-colors">
+          <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-bg-tertiary text-text-2 group-hover:bg-red-500 group-hover:text-white transition-colors">
             <BookOpen size={20} />
           </span>
           <div className="flex-1">
-            <p className="font-semibold text-text group-hover:text-accent transition-colors">Explorar desafios</p>
+            <p className="font-semibold text-text group-hover:text-red-500 transition-colors">Explorar desafios</p>
             <p className="text-xs text-text-3">JavaScript, Python, HTML e mais</p>
           </div>
           <ChevronRight size={16} className="text-text-3 group-hover:text-text-2" />
@@ -49,11 +44,11 @@ export function DashboardPage() {
           to="/rankings"
           className="group flex items-center gap-4 rounded-lg border border-border bg-surface p-4 hover:border-border-2 hover:shadow-sm transition-all"
         >
-          <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-bg-tertiary text-text-2 group-hover:bg-accent group-hover:text-text-inverse transition-colors">
+          <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-bg-tertiary text-text-2 group-hover:bg-red-500 group-hover:text-white transition-colors">
             <Trophy size={20} />
           </span>
           <div className="flex-1">
-            <p className="font-semibold text-text group-hover:text-accent transition-colors">Ranking global</p>
+            <p className="font-semibold text-text group-hover:text-red-500 transition-colors">Ranking global</p>
             <p className="text-xs text-text-3">Veja sua posição entre todos</p>
           </div>
           <ChevronRight size={16} className="text-text-3 group-hover:text-text-2" />

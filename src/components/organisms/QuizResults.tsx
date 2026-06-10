@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Trophy, ThumbsUp, ThumbsDown, Check, X, RefreshCw, BookOpen } from 'lucide-react';
+import { Check, X, RefreshCw, BookOpen } from 'lucide-react';
 import { cn, accuracyColor } from '../../lib/utils';
 import { Button } from '../atoms/Button';
 import { Badge } from '../atoms/Badge';
@@ -9,12 +9,6 @@ interface QuizResultsProps {
   results: QuizFinalResults;
   session: QuizSession;
   onRetry: () => void;
-}
-
-function ResultIcon({ pct }: { pct: number }) {
-  if (pct >= 70) return <Trophy size={52} className="text-warning" />;
-  if (pct >= 40) return <ThumbsUp size={52} className="text-info" />;
-  return <ThumbsDown size={52} className="text-text-3" />;
 }
 
 export function QuizResults({ results, session, onRetry }: QuizResultsProps) {
@@ -27,33 +21,44 @@ export function QuizResults({ results, session, onRetry }: QuizResultsProps) {
     error:   'text-error',
   }[color];
 
+  const total = results.questions_summary.length;
+
   return (
     <div className="flex flex-col gap-6 animate-bounce-in">
       {/* Hero result */}
-      <div className="rounded-xl border border-border bg-surface p-6 text-center">
-        <div className="flex justify-center mb-4">
-          <ResultIcon pct={results.accuracy_percentage} />
-        </div>
-        <h2 className="text-2xl font-bold text-text">Quiz concluído!</h2>
-        <p className="text-text-3 mt-1">
+      <div className="rounded-2xl border border-white/10 bg-[#010101] px-8 py-8 text-center">
+        <img
+          src="/finish-dragon.svg"
+          alt="Dragão comemorando"
+          className="h-28 mx-auto mb-4 drop-shadow-lg"
+        />
+        <h2 className="text-2xl font-bold text-white">Parabéns!</h2>
+        <p className="mt-2 text-base text-white/70 leading-snug">
+          Você acaba de completar uma atividade com{' '}
+          <span className="text-red-500 font-bold">
+            {results.correct_answers}/{total} acertos
+          </span>
+          !
+        </p>
+        <p className="mt-1 text-xs text-white/40">
           {session.language.name}
           {session.level && ` · ${session.level.name}`}
         </p>
 
         <div className="mt-6 grid grid-cols-3 gap-4">
           <div className="flex flex-col items-center gap-1">
-            <span className="text-2xl font-black text-text">{results.correct_answers}</span>
-            <span className="text-xs text-text-3">Acertos</span>
+            <span className="text-2xl font-black text-white">{results.correct_answers}</span>
+            <span className="text-xs text-white/40">Acertos</span>
           </div>
           <div className="flex flex-col items-center gap-1">
             <span className={cn('text-2xl font-black', colorClass)}>
               {results.accuracy_percentage}%
             </span>
-            <span className="text-xs text-text-3">Precisão</span>
+            <span className="text-xs text-white/40">Precisão</span>
           </div>
           <div className="flex flex-col items-center gap-1">
-            <span className="text-2xl font-black text-text">+{results.total_xp_earned}</span>
-            <span className="text-xs text-text-3">XP ganho</span>
+            <span className="text-2xl font-black text-white">+{results.total_xp_earned}</span>
+            <span className="text-xs text-white/40">XP ganho</span>
           </div>
         </div>
 

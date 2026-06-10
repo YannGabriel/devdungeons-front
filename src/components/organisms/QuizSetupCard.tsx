@@ -1,16 +1,24 @@
 import { useState } from 'react';
-import { Play, Code2, Check } from 'lucide-react';
+import { Play, Code2, Check, Eye, RefreshCw } from 'lucide-react';
 import { getLangConfig } from '../../lib/langConfig';
 import { cn } from '../../lib/utils';
 import { Button } from '../atoms/Button';
 import type { ProgrammingLanguage, KnowledgeLevel } from '../../types/api';
 
+export interface CompletedSession {
+  sessionId: string;
+  accuracy: number;
+}
+
 interface QuizSetupCardProps {
   language: ProgrammingLanguage;
   levels: KnowledgeLevel[];
+  /** levelId → completed session info */
+  completedSessions: Record<string, CompletedSession>;
   isStarting: boolean;
   disabled: boolean;
   onStart: (languageId: string, levelId: string) => void;
+  onReview: (sessionId: string) => void;
 }
 
 const LEVEL_STYLE: Record<string, { bar: string; xpColor: string; dot: string }> = {
@@ -28,12 +36,15 @@ const XP_LABEL: Record<string, string> = {
 export function QuizSetupCard({
   language,
   levels,
+  completedSessions,
   isStarting,
   disabled,
   onStart,
+  onReview,
 }: QuizSetupCardProps) {
   const [levelId, setLevelId] = useState<string>(() => levels[0]?.id ?? '');
   const config = getLangConfig(language.name);
+  const selectedCompleted = levelId ? completedSessions[levelId] : null;
 
   return (
     <div
@@ -62,6 +73,7 @@ export function QuizSetupCard({
           const isSelected = levelId === lvl.id;
           const style = LEVEL_STYLE[lvl.name];
           const isLast = idx === levels.length - 1;
+          const completed = completedSessions[lvl.id];
 
           return (
             <button
@@ -76,7 +88,7 @@ export function QuizSetupCard({
             >
               {/* Colored side bar */}
               {isSelected && (
-                <span className={cn('absolute left-0 top-0 h-full w-[3px] rounded-r-none', style?.bar ?? 'bg-accent')} />
+                <span className={cn('absolute left-0 top-0 h-full w-[3px]', style?.bar ?? 'bg-accent')} />
               )}
 
               <div className="flex items-center gap-2.5 pl-1.5">
@@ -96,6 +108,14 @@ export function QuizSetupCard({
                 )}>
                   {lvl.name}
                 </span>
+
+                {/* Concluído badge */}
+                {completed && (
+                  <span className="flex items-center gap-0.5 rounded-full bg-success/10 px-1.5 py-0.5 text-[10px] font-semibold text-success">
+                    <Check size={8} strokeWidth={3} />
+                    {completed.accuracy}%
+                  </span>
+                )}
               </div>
 
               <span className={cn(
@@ -109,21 +129,39 @@ export function QuizSetupCard({
         })}
       </div>
 
-      {/* Acessar */}
-      <div className="p-3">
-        <Button
-          fullWidth
-          size="sm"
-          disabled={(disabled && !isStarting) || !levelId}
-          loading={isStarting}
-          onClick={() => onStart(language.id, levelId)}
-        >
-          <p className='flex items-center gap-3'>
-            {!isStarting && <Play size={13} />}
-            Acessar
-          </p>
+      {/* Actions */}
+      <div className="p-3 flex flex-col gap-1.5">
+        {selectedCompleted ? (
+          <>
+            <Button
+              fullWidth
+              size="sm"
+              className='border-t border-t-black'
+              variant="secondary"
+              onClick={() => onReview(selectedCompleted.sessionId)}
+            >
+              <p className='flex gap-3 items-center'>
+                <Eye size={13} />
+                Revisitar
+              </p>
 
-        </Button>
+            </Button>
+          </>
+        ) : (
+          <Button
+            fullWidth
+            size="sm"
+            disabled={(disabled && !isStarting) || !levelId}
+            loading={isStarting}
+            onClick={() => onStart(language.id, levelId)}
+          >
+            <p className='flex gap-3 items-center'>
+              {!isStarting && <Play size={13} />}
+              Acessar
+            </p>
+
+          </Button>
+        )}
       </div>
     </div>
   );

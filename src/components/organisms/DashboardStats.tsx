@@ -29,7 +29,7 @@ export function DashboardStats() {
       <div className="rounded-xl border border-border bg-surface p-6">
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-text">Seu progresso</h2>
+            <h2 className="text-lg font-bold text-text">Seu <span className="text-red-500">progresso</span></h2>
             <p className="text-sm text-text-3">
               {totalXp(user.user_level, user.user_experience).toLocaleString('pt-BR')} XP acumulados
             </p>
@@ -74,16 +74,9 @@ export function DashboardStats() {
       {/* Recent history */}
       <div>
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-text-3">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-red-500">
             Últimas partidas
           </h3>
-          <Link
-            to="/quiz"
-            className="flex items-center gap-1 text-xs text-text-2 hover:text-text transition-colors"
-          >
-            Jogar agora
-            <ArrowRight size={12} />
-          </Link>
         </div>
 
         {historyLoading ? (

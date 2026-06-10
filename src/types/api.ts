@@ -167,8 +167,8 @@ export interface QuizAnswerResponse {
 export interface QuizHistoryItem {
   id: string;
   status: QuizStatus;
-  language: Pick<ProgrammingLanguage, "name">;
-  level: Pick<KnowledgeLevel, "name" | "xp"> | null;
+  language: Pick<ProgrammingLanguage, "id" | "name">;
+  level: Pick<KnowledgeLevel, "id" | "name" | "xp"> | null;
   score: number;
   total_questions: number;
   accuracy_percentage: number;

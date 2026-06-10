@@ -10,16 +10,17 @@ import { DashboardPage } from './pages/DashboardPage';
 import { LanguagesPage } from './pages/LanguagesPage';
 import { LanguageDetailPage } from './pages/LanguageDetailPage';
 import { QuizPage } from './pages/QuizPage';
+import { QuizReviewPage } from './pages/QuizReviewPage';
 import { RankingsPage } from './pages/RankingsPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 export default function App() {
-  const { theme, applyTheme } = useThemeStore();
+  const { applyTheme } = useThemeStore();
 
   useEffect(() => {
-    applyTheme(theme);
-  }, [theme, applyTheme]);
+    applyTheme();
+  }, [applyTheme]);
 
   return (
     <BrowserRouter>
@@ -38,6 +39,7 @@ export default function App() {
             <Route path="/languages/:id" element={<LanguageDetailPage />} />
             <Route path="/quiz" element={<QuizPage />} />
             <Route path="/quiz/:sessionId" element={<QuizPage />} />
+            <Route path="/quiz/review/:sessionId" element={<QuizReviewPage />} />
             <Route path="/rankings" element={<RankingsPage />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Route>

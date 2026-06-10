@@ -64,7 +64,7 @@ export function LanguageCard({ language, userLevel, className }: LanguageCardPro
       </div>
 
       {/* Footer */}
-      <div className="flex justify-center gap-1.5 border-t border-border px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-3 group-hover:text-accent group-hover:bg-accent-subtle transition-colors">
+      <div className="flex justify-center gap-1.5 border-t border-border px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-3 group-hover:text-red-500 group-hover:bg-red-50 transition-colors">
         Acessar
         <ArrowRight size={13} />
       </div>
