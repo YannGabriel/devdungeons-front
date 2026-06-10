@@ -44,15 +44,6 @@ export function Header() {
     <header className="sticky top-0 z-30 border-b border-border bg-surface/95 backdrop-blur-sm">
       <div className="flex h-14 items-center gap-2 px-4 sm:px-6">
 
-        {/* Logo */}
-        <Link
-          to="/dashboard"
-          className="flex items-center gap-2 font-bold text-text hover:opacity-80 transition-opacity mr-2 flex-shrink-0"
-        >
-          <Shield size={20} className="text-accent" />
-          <span className="hidden sm:inline text-sm">DevDungeons</span>
-        </Link>
-
         {/* Horizontal nav — desktop */}
         <nav className="hidden md:flex items-center gap-1 flex-1">
           {NAV_ITEMS.map(({ to, label, Icon }) => (
